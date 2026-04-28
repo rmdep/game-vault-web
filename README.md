@@ -31,3 +31,9 @@ npm start
 4. Klik `Upload ke Vault`.
 
 Catatan: upload lokal tidak bisa berjalan kalau file HTML dibuka langsung dengan `file://`. Pakai `npm start` supaya API backend aktif.
+
+## GitHub Pages
+
+Web utama bisa dibuka dari GitHub Pages karena halaman utama membaca `data/items.json` sebagai file statis.
+
+Admin juga bisa dipakai dari GitHub Pages, tetapi upload dilakukan lewat GitHub API. Saat membuka `admin.html` dari GitHub Pages, isi token GitHub dengan akses `Contents: Read and write` untuk repo ini, lalu upload file seperti biasa.

@@ -18,9 +18,32 @@
   </header>
 
   <main class="admin-layout">
+    <section class="panel is-hidden" id="github-settings">
+      <h2>GitHub Pages Upload</h2>
+      <p class="hint">Mode ini dipakai saat admin dibuka dari GitHub Pages. Token hanya disimpan di browser kamu, bukan di file project.</p>
+      <div class="form-grid">
+        <label>
+          Owner GitHub
+          <input id="owner" type="text" value="rmdep">
+        </label>
+        <label>
+          Nama repo
+          <input id="repo" type="text" value="game-vault-web">
+        </label>
+        <label>
+          Branch
+          <input id="branch" type="text" value="main">
+        </label>
+        <label>
+          GitHub token
+          <input id="token" type="password" placeholder="github_pat_...">
+        </label>
+      </div>
+    </section>
+
     <section class="panel">
       <h2>Data Berkas</h2>
-      <p class="hint">Upload disimpan oleh backend lokal ke folder kategori dan otomatis masuk ke daftar utama.</p>
+      <p class="hint" id="upload-mode-note">Upload disimpan ke folder kategori dan otomatis masuk ke daftar utama.</p>
       <form id="upload-form">
         <div class="form-grid">
           <label>

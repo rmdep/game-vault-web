@@ -2,6 +2,21 @@ const form = document.getElementById('upload-form');
 const statusBox = document.getElementById('status');
 const categoryInput = document.getElementById('category');
 const scriptFields = document.getElementById('script-fields');
+const githubSettings = document.getElementById('github-settings');
+const uploadModeNote = document.getElementById('upload-mode-note');
+const githubFields = ['owner', 'repo', 'branch'];
+const isLocalMode = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+if (!isLocalMode) {
+  githubSettings.classList.remove('is-hidden');
+  uploadModeNote.textContent = 'Upload dari GitHub Pages akan mengirim file dan data langsung ke repo GitHub.';
+}
+
+githubFields.forEach((field) => {
+  const input = document.getElementById(field);
+  input.value = localStorage.getItem(`vault-${field}`) || input.value;
+  input.addEventListener('input', () => localStorage.setItem(`vault-${field}`, input.value));
+});
 
 function setStatus(message) {
   statusBox.textContent = message;
@@ -13,6 +28,67 @@ function readFileAsBase64(file) {
     reader.onload = () => resolve(String(reader.result).split(',')[1]);
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(file);
+  });
+}
+
+function toBase64Text(value) {
+  return btoa(unescape(encodeURIComponent(value)));
+}
+
+function fromBase64Text(value) {
+  return decodeURIComponent(escape(atob(value.replace(/\n/g, ''))));
+}
+
+function safeFileName(name) {
+  const cleaned = name
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  return `${Date.now()}-${cleaned || 'file'}`;
+}
+
+function apiUrl(owner, repo, path) {
+  return `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path).replaceAll('%2F', '/')}`;
+}
+
+async function githubRequest(url, token, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(options.headers || {}),
+    },
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`${response.status} ${response.statusText}\n${text}`);
+  }
+
+  return response.status === 204 ? null : response.json();
+}
+
+async function getGithubFile(owner, repo, branch, path, token) {
+  try {
+    return await githubRequest(`${apiUrl(owner, repo, path)}?ref=${encodeURIComponent(branch)}`, token);
+  } catch (error) {
+    if (String(error.message).startsWith('404')) return null;
+    throw error;
+  }
+}
+
+async function putGithubFile({ owner, repo, branch, path, token, content, message, sha }) {
+  return githubRequest(apiUrl(owner, repo, path), token, {
+    method: 'PUT',
+    body: JSON.stringify({
+      message,
+      content,
+      branch,
+      sha,
+    }),
   });
 }
 
@@ -38,6 +114,75 @@ function updateScriptFields() {
 categoryInput.addEventListener('change', updateScriptFields);
 updateScriptFields();
 
+async function uploadLocal(payload) {
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'Upload gagal.');
+  return result.item;
+}
+
+async function uploadGithub(payload, scriptDetails) {
+  const owner = document.getElementById('owner').value.trim();
+  const repo = document.getElementById('repo').value.trim();
+  const branch = document.getElementById('branch').value.trim() || 'main';
+  const token = document.getElementById('token').value.trim();
+
+  if (!owner || !repo || !branch || !token) {
+    throw new Error('Lengkapi owner, repo, branch, dan token GitHub.');
+  }
+
+  const filePath = `${payload.category}/${safeFileName(payload.fileName)}`;
+
+  setStatus(`Upload file ke ${filePath}...`);
+  await putGithubFile({
+    owner,
+    repo,
+    branch,
+    path: filePath,
+    token,
+    content: payload.fileBase64,
+    message: `Upload ${payload.title}`,
+  });
+
+  setStatus('Update data/items.json...');
+  const dataFile = await getGithubFile(owner, repo, branch, 'data/items.json', token);
+  const items = dataFile ? JSON.parse(fromBase64Text(dataFile.content)) : [];
+  const item = {
+    id: crypto.randomUUID(),
+    category: payload.category,
+    title: payload.title,
+    description: payload.description,
+    meta: [
+      scriptDetails.engine,
+      scriptDetails.language,
+      scriptDetails.module,
+    ].filter(Boolean).join(' / ') || payload.category,
+    ...scriptDetails,
+    path: filePath,
+    originalName: payload.fileName,
+    createdAt: new Date().toISOString(),
+  };
+
+  items.unshift(item);
+  await putGithubFile({
+    owner,
+    repo,
+    branch,
+    path: 'data/items.json',
+    token,
+    content: toBase64Text(JSON.stringify(items, null, 2)),
+    message: `Add data for ${payload.title}`,
+    sha: dataFile && dataFile.sha,
+  });
+
+  return item;
+}
+
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
 
@@ -55,28 +200,24 @@ form.addEventListener('submit', async (event) => {
   try {
     setStatus('Membaca file...');
     const fileContent = await readFileAsBase64(file);
+    const payload = {
+      category,
+      title,
+      description,
+      fileName: file.name,
+      fileBase64: fileContent,
+      module: scriptDetails.module || '',
+      tags: scriptDetails.tags || [],
+    };
 
-    setStatus('Mengirim ke backend lokal...');
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        category,
-        title,
-        description,
-        fileName: file.name,
-        fileBase64: fileContent,
-        module: scriptDetails.module || '',
-        tags: scriptDetails.tags || [],
-      }),
-    });
-
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Upload gagal.');
+    setStatus(isLocalMode ? 'Mengirim ke backend lokal...' : 'Mengirim ke GitHub...');
+    const item = isLocalMode
+      ? await uploadLocal(payload)
+      : await uploadGithub(payload, scriptDetails);
 
     form.reset();
     updateScriptFields();
-    setStatus(`Selesai.\nFile: ${result.item.path}\nData sudah masuk ke data/items.json.`);
+    setStatus(`Selesai.\nFile: ${item.path}\nData sudah masuk ke data/items.json.`);
   } catch (error) {
     setStatus(`Gagal upload:\n${error.message}`);
   }
