@@ -154,28 +154,27 @@
 
   </main>
 
-  <!-- 🔥 TAMBAHAN KECIL (TIDAK NGUBAH STRUKTUR) -->
-  <script>
-    const category = document.getElementById("category");
-    const scriptFields = document.getElementById("script-fields");
-    const fileWrapper = document.getElementById("file-wrapper");
-    const fileInput = document.getElementById("file");
+ <script>
+  const category = document.getElementById("category");
+  const scriptFields = document.getElementById("script-fields");
+  const fileWrapper = document.getElementById("file-wrapper");
+  const fileInput = document.getElementById("file");
 
-    function updateUI() {
-      if (category.value === "scripts") {
-        scriptFields.classList.remove("is-hidden");
-        fileWrapper.style.display = "none";
-        fileInput.required = false;
-      } else {
-        scriptFields.classList.add("is-hidden");
-        fileWrapper.style.display = "block";
-        fileInput.required = true;
-      }
+  function updateUI() {
+    if (category.value === "scripts") {
+      scriptFields.classList.remove("is-hidden");
+      fileWrapper.style.display = "none";
+      fileInput.required = false;
+    } else {
+      scriptFields.classList.add("is-hidden");
+      fileWrapper.style.display = "block";
+      fileInput.required = true;
     }
+  }
 
-    category.addEventListener("change", updateUI);
-    updateUI();
-  </script>
+  category.addEventListener("change", updateUI);
+  updateUI();
+</script>
 
   <script src="assets/admin.js?v=manage-files-1"></script>
 
