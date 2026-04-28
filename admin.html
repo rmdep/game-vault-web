@@ -18,6 +18,26 @@
   </header>
 
   <main class="admin-layout">
+    <section class="panel login-panel" id="login-panel">
+      <h2>Login Admin</h2>
+      <p class="hint">Masuk dulu untuk membuka panel upload.</p>
+      <form id="login-form">
+        <div class="form-grid">
+          <label>
+            ID admin
+            <input id="admin-id" type="text" autocomplete="username" required placeholder="admin">
+          </label>
+          <label>
+            Password
+            <input id="admin-password" type="password" autocomplete="current-password" required placeholder="Password">
+          </label>
+        </div>
+        <button class="primary" type="submit">Masuk Admin</button>
+      </form>
+      <pre id="login-status" class="status compact-status"></pre>
+    </section>
+
+    <div id="admin-content" class="admin-content is-hidden">
     <section class="panel is-hidden" id="github-settings">
       <h2>GitHub Pages Upload</h2>
       <p class="hint">Mode ini dipakai saat admin dibuka dari GitHub Pages. Token hanya disimpan di browser kamu, bukan di file project.</p>
@@ -84,6 +104,7 @@
       </form>
       <pre id="status" class="status">Siap upload.</pre>
     </section>
+    </div>
   </main>
 
   <script src="assets/admin.js"></script>

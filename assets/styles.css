@@ -283,6 +283,15 @@ nav a:hover {
   max-width: 900px;
 }
 
+.admin-content {
+  display: grid;
+  gap: 18px;
+}
+
+.login-panel {
+  max-width: 640px;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -340,6 +349,10 @@ textarea {
 
 .status:not(:empty) {
   border-left: 4px solid var(--success);
+}
+
+.compact-status {
+  min-height: 48px;
 }
 
 @media (max-width: 720px) {

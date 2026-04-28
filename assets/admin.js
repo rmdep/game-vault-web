@@ -1,3 +1,9 @@
+const ADMIN_ID = 'admin';
+const ADMIN_PASSWORD = 'gamevault123';
+const loginPanel = document.getElementById('login-panel');
+const loginForm = document.getElementById('login-form');
+const loginStatus = document.getElementById('login-status');
+const adminContent = document.getElementById('admin-content');
 const form = document.getElementById('upload-form');
 const statusBox = document.getElementById('status');
 const categoryInput = document.getElementById('category');
@@ -6,6 +12,31 @@ const githubSettings = document.getElementById('github-settings');
 const uploadModeNote = document.getElementById('upload-mode-note');
 const githubFields = ['owner', 'repo', 'branch'];
 const isLocalMode = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+function showAdminContent() {
+  loginPanel.classList.add('is-hidden');
+  adminContent.classList.remove('is-hidden');
+}
+
+if (sessionStorage.getItem('vault-admin-auth') === 'true') {
+  showAdminContent();
+}
+
+loginForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+
+  const id = document.getElementById('admin-id').value.trim();
+  const password = document.getElementById('admin-password').value;
+
+  if (id === ADMIN_ID && password === ADMIN_PASSWORD) {
+    sessionStorage.setItem('vault-admin-auth', 'true');
+    loginStatus.textContent = '';
+    showAdminContent();
+    return;
+  }
+
+  loginStatus.textContent = 'ID atau password salah.';
+});
 
 if (!isLocalMode) {
   githubSettings.classList.remove('is-hidden');
