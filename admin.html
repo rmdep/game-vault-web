@@ -1,219 +1,154 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin - Game Vault</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Game Vault</title>
+  <link rel="stylesheet" href="assets/styles.css">
 
-<style>
-body {
-  font-family: Arial;
-  background: #0f0f0f;
-  color: #fff;
-  margin: 0;
-}
-
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 15px;
-  background: #1a1a1a;
-}
-
-.panel {
-  background: #1a1a1a;
-  padding: 20px;
-  margin: 15px;
-  border-radius: 10px;
-}
-
-button {
-  cursor: pointer;
-  padding: 8px;
-}
-
-.primary {
-  background: #4cafef;
-  border: none;
-  color: white;
-}
-
-.script-layout {
-  display: grid;
-  grid-template-columns: 180px 200px 1fr;
-  gap: 10px;
-}
-
-.script-sidebar button {
-  width: 100%;
-  margin-bottom: 5px;
-}
-
-.script-list div {
-  padding: 8px;
-  border-bottom: 1px solid #333;
-  cursor: pointer;
-}
-
-.script-list div:hover {
-  background: #222;
-}
-
-.script-viewer pre {
-  background: #111;
-  padding: 10px;
-  overflow-x: auto;
-}
-</style>
+  <style>
+    .is-hidden { display: none; }
+  </style>
 </head>
 
 <body>
 
+<!-- ================= HEADER ================= -->
 <header class="topbar">
-  <h1>Admin Panel</h1>
+  <div>
+    <p class="eyebrow">Admin panel</p>
+    <h1>Upload Berkas</h1>
+  </div>
+  <nav>
+    <a href="index.html">Lihat Web</a>
+  </nav>
 </header>
 
-<main>
+<!-- ================= MAIN ================= -->
+<main class="admin-layout">
 
-<section class="panel">
-  <h2>Login Admin</h2>
-  <input id="admin-id" placeholder="admin"><br><br>
-  <input id="admin-password" type="password" placeholder="password"><br><br>
-  <button class="primary" onclick="login()">Login</button>
-  <p id="login-status"></p>
-</section>
+  <!-- ========= LOGIN ========= -->
+  <section class="panel login-panel" id="login-panel">
+    <h2>Login Admin</h2>
+    <form id="login-form">
+      <input id="admin-id" placeholder="admin" required>
+      <input id="admin-password" type="password" placeholder="password" required>
+      <button class="primary">Masuk</button>
+    </form>
+    <pre id="login-status"></pre>
+  </section>
 
-<div id="admin-content" style="display:none">
+  <!-- ========= CONTENT ========= -->
+  <div id="admin-content" class="is-hidden">
 
-<section class="panel">
-  <h2>Upload (Dummy)</h2>
-  <input placeholder="Nama file"><br><br>
-  <input type="file"><br><br>
-  <button class="primary">Upload</button>
-</section>
+    <!-- ===== UPLOAD ===== -->
+    <section class="panel">
+      <h2>Upload Berkas</h2>
 
-<!-- ========================= -->
-<!-- SCRIPT EXPLORER -->
-<!-- ========================= -->
-<section class="panel">
-  <h2>Script Explorer</h2>
+      <form id="upload-form">
 
-  <div class="script-layout">
-    
-    <div id="script-folders" class="script-sidebar"></div>
-    <div id="script-list" class="script-list"></div>
+        <!-- CATEGORY -->
+        <label>
+          Kategori
+          <select id="category">
+            <option value="documents">Document</option>
+            <option value="scripts">Script</option>
+            <option value="games">Game</option>
+          </select>
+        </label>
 
-    <div class="script-viewer">
-      <pre id="script-code">Pilih script...</pre>
-      <button id="copy-btn">Copy Code</button>
-    </div>
+        <!-- TITLE -->
+        <label>
+          Nama
+          <input id="title" required>
+        </label>
+
+        <!-- FILE -->
+        <label id="file-group">
+          File
+          <input id="file" type="file">
+        </label>
+
+        <!-- SCRIPT INPUT -->
+        <div id="script-group" class="is-hidden">
+          <label>
+            Code Script
+            <textarea id="script-code" rows="10"
+              placeholder="Tulis script C# di sini..."></textarea>
+          </label>
+        </div>
+
+        <!-- DESC -->
+        <label>
+          Deskripsi
+          <textarea id="description"></textarea>
+        </label>
+
+        <button class="primary">Upload</button>
+
+      </form>
+
+      <pre id="status">Siap upload</pre>
+    </section>
 
   </div>
-</section>
-
-</div>
 
 </main>
 
 <script>
+
 // ================= LOGIN =================
-function login() {
+document.getElementById("login-form").addEventListener("submit", (e)=>{
+  e.preventDefault();
+
   const id = document.getElementById("admin-id").value;
   const pass = document.getElementById("admin-password").value;
 
-  if (id === "admin" && pass === "admin") {
-    document.getElementById("admin-content").style.display = "block";
-    document.getElementById("login-status").textContent = "Login berhasil";
+  if(id==="admin" && pass==="admin"){
+    document.getElementById("admin-content").classList.remove("is-hidden");
+    document.getElementById("login-status").textContent="Login berhasil";
   } else {
-    document.getElementById("login-status").textContent = "Login gagal";
+    document.getElementById("login-status").textContent="Login gagal";
   }
-}
-
-// ================= SCRIPT DATA =================
-const scriptData = {
-  "Movement": [
-    {
-      name: "Player Movement",
-      code: `using UnityEngine;
-
-public class PlayerMove : MonoBehaviour
-{
-    public float speed = 5f;
-
-    void Update()
-    {
-        float h = Input.GetAxis("Horizontal");
-        transform.Translate(Vector2.right * h * speed * Time.deltaTime);
-    }
-}`
-    }
-  ],
-  "Enemy": [
-    {
-      name: "Enemy Patrol",
-      code: `using UnityEngine;
-
-public class EnemyPatrol : MonoBehaviour
-{
-    public float speed = 2f;
-
-    void Update()
-    {
-        transform.Translate(Vector2.right * speed * Time.deltaTime);
-    }
-}`
-    }
-  ],
-  "UI": [
-    {
-      name: "Button Click",
-      code: `using UnityEngine;
-
-public class UIButton : MonoBehaviour
-{
-    public void Click()
-    {
-        Debug.Log("Clicked");
-    }
-}`
-    }
-  ]
-};
-
-// ================= SCRIPT EXPLORER =================
-const folderContainer = document.getElementById("script-folders");
-const listContainer = document.getElementById("script-list");
-const codeViewer = document.getElementById("script-code");
-const copyBtn = document.getElementById("copy-btn");
-
-// load folder
-Object.keys(scriptData).forEach(folder => {
-  const btn = document.createElement("button");
-  btn.textContent = folder;
-
-  btn.onclick = () => {
-    listContainer.innerHTML = "";
-
-    scriptData[folder].forEach(script => {
-      const item = document.createElement("div");
-      item.textContent = script.name;
-
-      item.onclick = () => {
-        codeViewer.textContent = script.code;
-      };
-
-      listContainer.appendChild(item);
-    });
-  };
-
-  folderContainer.appendChild(btn);
 });
 
-// copy
-copyBtn.onclick = () => {
-  navigator.clipboard.writeText(codeViewer.textContent);
-  alert("Copied!");
-};
+// ================= TOGGLE SCRIPT MODE =================
+const category = document.getElementById("category");
+const fileGroup = document.getElementById("file-group");
+const scriptGroup = document.getElementById("script-group");
+
+category.addEventListener("change", ()=>{
+  if(category.value === "scripts"){
+    fileGroup.style.display = "none";
+    scriptGroup.classList.remove("is-hidden");
+  } else {
+    fileGroup.style.display = "block";
+    scriptGroup.classList.add("is-hidden");
+  }
+});
+
+// ================= SUBMIT =================
+document.getElementById("upload-form").addEventListener("submit",(e)=>{
+  e.preventDefault();
+
+  const cat = category.value;
+  const title = document.getElementById("title").value;
+  const desc = document.getElementById("description").value;
+
+  if(cat === "scripts"){
+    const code = document.getElementById("script-code").value;
+
+    console.log("SCRIPT MODE", {title, desc, code});
+    document.getElementById("status").textContent = "Script disimpan (dummy)";
+  }
+  else{
+    const file = document.getElementById("file").files[0];
+
+    console.log("FILE MODE", {title, desc, file});
+    document.getElementById("status").textContent = "File diupload (dummy)";
+  }
+});
+
 </script>
 
 </body>
