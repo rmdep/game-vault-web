@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin - Game Vault</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Admin panel</p>
+      <h1>Upload Berkas</h1>
+    </div>
+    <nav>
+      <a href="index.html">Lihat Web</a>
+    </nav>
+  </header>
+
+  <main class="admin-layout">
+    <section class="panel">
+      <h2>Data Berkas</h2>
+      <p class="hint">Upload disimpan oleh backend lokal ke folder kategori dan otomatis masuk ke daftar utama.</p>
+      <form id="upload-form">
+        <div class="form-grid">
+          <label>
+            Kategori
+            <select id="category">
+              <option value="documents">Document</option>
+              <option value="scripts">Script</option>
+              <option value="games">File Game</option>
+            </select>
+          </label>
+          <label>
+            Nama
+            <input id="title" type="text" required placeholder="Nama berkas">
+          </label>
+          <label>
+            File
+            <input id="file" type="file" required>
+          </label>
+        </div>
+        <label>
+          Deskripsi
+          <textarea id="description" rows="5" required placeholder="Jelaskan isi berkas ini"></textarea>
+        </label>
+        <div id="script-fields" class="script-admin is-hidden">
+          <h3>Detail Script</h3>
+          <div class="form-grid">
+            <label>
+              Topik script
+              <input id="script-module" type="text" placeholder="Movement Player">
+            </label>
+            <label>
+              Tags
+              <input id="script-tags" type="text" placeholder="movement, player, 2d">
+            </label>
+          </div>
+        </div>
+        <button class="primary" type="submit">Upload ke Vault</button>
+      </form>
+      <pre id="status" class="status">Siap upload.</pre>
+    </section>
+  </main>
+
+  <script src="assets/admin.js"></script>
+</body>
+</html>

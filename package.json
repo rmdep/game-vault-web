@@ -1,0 +1,9 @@
+{
+  "name": "game-vault-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local web vault for documents, scripts, and game files.",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

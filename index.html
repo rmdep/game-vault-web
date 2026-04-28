@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Vault</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Personal archive</p>
+      <h1>Game Vault</h1>
+    </div>
+    <nav>
+      <a class="admin-link" href="admin.html">Admin Upload</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h2>Tempat simpan hasil game, dokumen, dan script.</h2>
+      <p>Upload lewat halaman admin, lalu file akan tampil otomatis di kategori yang sesuai.</p>
+    </section>
+
+    <section id="documents" class="category" data-folder="documents">
+      <button class="folder-head" type="button" aria-expanded="true">
+        <span>Document</span>
+        <small id="documents-count">0 file</small>
+      </button>
+      <div class="folder-body">
+        <input class="search" type="search" data-search="documents" placeholder="Cari document...">
+        <div class="grid" data-list="documents"></div>
+      </div>
+    </section>
+
+    <section id="scripts" class="category" data-folder="scripts">
+      <button class="folder-head" type="button" aria-expanded="true">
+        <span>Script</span>
+        <small id="scripts-count">0 file</small>
+      </button>
+      <div class="folder-body">
+        <input class="search" type="search" data-search="scripts" placeholder="Cari script...">
+        <div class="script-viewer" id="script-viewer" hidden>
+          <div class="script-viewer-head">
+            <div>
+              <p class="eyebrow">Script preview</p>
+              <h3 id="script-viewer-title">Pilih script</h3>
+            </div>
+            <div class="script-actions">
+              <button class="download copy-script" id="script-viewer-copy" type="button">Copy</button>
+              <button class="download copy-script" id="script-viewer-close" type="button">Tutup</button>
+            </div>
+          </div>
+          <pre class="code-box"><code id="script-viewer-code"></code></pre>
+        </div>
+        <div class="grid" data-list="scripts"></div>
+      </div>
+    </section>
+
+    <section id="games" class="category" data-folder="games">
+      <button class="folder-head" type="button" aria-expanded="true">
+        <span>File Game</span>
+        <small id="games-count">0 file</small>
+      </button>
+      <div class="folder-body">
+        <input class="search" type="search" data-search="games" placeholder="Cari file game...">
+        <div class="grid" data-list="games"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
