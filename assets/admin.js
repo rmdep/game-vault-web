@@ -10,6 +10,8 @@ const categoryInput = document.getElementById('category');
 const scriptFields = document.getElementById('script-fields');
 const githubSettings = document.getElementById('github-settings');
 const uploadModeNote = document.getElementById('upload-mode-note');
+const tokenInput = document.getElementById('token');
+const clearTokenButton = document.getElementById('clear-token');
 const githubFields = ['owner', 'repo', 'branch'];
 const isLocalMode = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
@@ -43,6 +45,17 @@ githubFields.forEach((field) => {
   const input = document.getElementById(field);
   input.value = localStorage.getItem(`vault-${field}`) || input.value;
   input.addEventListener('input', () => localStorage.setItem(`vault-${field}`, input.value));
+});
+
+tokenInput.value = localStorage.getItem('vault-token') || '';
+tokenInput.addEventListener('input', () => {
+  localStorage.setItem('vault-token', tokenInput.value);
+});
+
+clearTokenButton.addEventListener('click', () => {
+  localStorage.removeItem('vault-token');
+  tokenInput.value = '';
+  setStatus('Token tersimpan sudah dihapus dari browser ini.');
 });
 
 function setStatus(message) {
