@@ -14,12 +14,9 @@ const githubFields = ['owner', 'repo', 'branch'];
 const isLocalMode = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
 function showAdminContent() {
-  loginPanel.classList.add('is-hidden');
+  loginPanel.hidden = true;
   adminContent.classList.remove('is-hidden');
-}
-
-if (sessionStorage.getItem('vault-admin-auth') === 'true') {
-  showAdminContent();
+  adminContent.hidden = false;
 }
 
 loginForm.addEventListener('submit', (event) => {
@@ -29,7 +26,6 @@ loginForm.addEventListener('submit', (event) => {
   const password = document.getElementById('admin-password').value;
 
   if (id === ADMIN_ID && password === ADMIN_PASSWORD) {
-    sessionStorage.setItem('vault-admin-auth', 'true');
     loginStatus.textContent = '';
     showAdminContent();
     return;
