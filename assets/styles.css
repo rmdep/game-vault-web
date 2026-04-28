@@ -355,6 +355,36 @@ textarea {
   min-height: 48px;
 }
 
+.admin-file-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-file-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.admin-file-row h3,
+.admin-file-row p {
+  margin: 0;
+}
+
+.danger {
+  border-color: #d9a3a3;
+  color: #8a1f1f;
+}
+
+.danger:hover {
+  border-color: #b94b4b;
+  background: #fff1f1;
+}
+
 @media (max-width: 720px) {
   .topbar {
     align-items: flex-start;
@@ -362,6 +392,7 @@ textarea {
   }
 
   .script-viewer-head,
+  .admin-file-row,
   .card-footer {
     align-items: flex-start;
     flex-direction: column;

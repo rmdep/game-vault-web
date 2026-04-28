@@ -12,13 +12,16 @@ const githubSettings = document.getElementById('github-settings');
 const uploadModeNote = document.getElementById('upload-mode-note');
 const tokenInput = document.getElementById('token');
 const clearTokenButton = document.getElementById('clear-token');
+const adminFileList = document.getElementById('admin-file-list');
 const githubFields = ['owner', 'repo', 'branch'];
 const isLocalMode = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+let currentItems = [];
 
 function showAdminContent() {
   loginPanel.hidden = true;
   adminContent.classList.remove('is-hidden');
   adminContent.hidden = false;
+  loadAdminItems();
 }
 
 loginForm.addEventListener('submit', (event) => {
@@ -132,6 +135,17 @@ async function putGithubFile({ owner, repo, branch, path, token, content, messag
   });
 }
 
+async function deleteGithubFile({ owner, repo, branch, path, token, sha, message }) {
+  return githubRequest(apiUrl(owner, repo, path), token, {
+    method: 'DELETE',
+    body: JSON.stringify({
+      message,
+      branch,
+      sha,
+    }),
+  });
+}
+
 function getScriptDetails() {
   const module = document.getElementById('script-module').value.trim();
   const tags = document.getElementById('script-tags').value
@@ -164,6 +178,15 @@ async function uploadLocal(payload) {
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || 'Upload gagal.');
   return result.item;
+}
+
+async function deleteLocalItem(id) {
+  const response = await fetch(`/api/items/${encodeURIComponent(id)}`, {
+    method: 'DELETE',
+  });
+
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'Hapus gagal.');
 }
 
 async function uploadGithub(payload, scriptDetails) {
@@ -223,6 +246,125 @@ async function uploadGithub(payload, scriptDetails) {
   return item;
 }
 
+async function loadAdminItems() {
+  try {
+    adminFileList.innerHTML = '<p class="empty">Membaca daftar berkas...</p>';
+    const response = await fetch(`data/items.json?v=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Tidak bisa membaca data/items.json');
+    currentItems = await response.json();
+    renderAdminItems();
+  } catch (error) {
+    adminFileList.innerHTML = `<p class="empty">${error.message}</p>`;
+  }
+}
+
+function renderAdminItems() {
+  adminFileList.innerHTML = '';
+
+  if (!currentItems.length) {
+    adminFileList.innerHTML = '<p class="empty">Belum ada berkas.</p>';
+    return;
+  }
+
+  currentItems.forEach((item) => {
+    const row = document.createElement('article');
+    row.className = 'admin-file-row';
+
+    const info = document.createElement('div');
+    const title = document.createElement('h3');
+    title.textContent = item.title;
+    const meta = document.createElement('p');
+    meta.className = 'meta';
+    meta.textContent = `${item.category} - ${item.originalName || item.path}`;
+    info.append(title, meta);
+
+    const actions = document.createElement('div');
+    actions.className = 'script-actions';
+
+    const open = document.createElement('a');
+    open.className = 'download';
+    open.href = item.path;
+    open.target = '_blank';
+    open.rel = 'noreferrer';
+    open.textContent = 'Buka';
+
+    const remove = document.createElement('button');
+    remove.className = 'download danger';
+    remove.type = 'button';
+    remove.textContent = 'Hapus';
+    remove.addEventListener('click', () => deleteItem(item, remove));
+
+    actions.append(open, remove);
+    row.append(info, actions);
+    adminFileList.append(row);
+  });
+}
+
+async function deleteGithubItem(item) {
+  const owner = document.getElementById('owner').value.trim();
+  const repo = document.getElementById('repo').value.trim();
+  const branch = document.getElementById('branch').value.trim() || 'main';
+  const token = document.getElementById('token').value.trim();
+
+  if (!owner || !repo || !branch || !token) {
+    throw new Error('Lengkapi owner, repo, branch, dan token GitHub.');
+  }
+
+  setStatus(`Menghapus file ${item.path}...`);
+  const targetFile = await getGithubFile(owner, repo, branch, item.path, token);
+  if (targetFile) {
+    await deleteGithubFile({
+      owner,
+      repo,
+      branch,
+      path: item.path,
+      token,
+      sha: targetFile.sha,
+      message: `Delete ${item.title}`,
+    });
+  }
+
+  setStatus('Update data/items.json...');
+  const dataFile = await getGithubFile(owner, repo, branch, 'data/items.json', token);
+  const items = dataFile ? JSON.parse(fromBase64Text(dataFile.content)) : [];
+  const nextItems = items.filter((entry) => entry.id !== item.id);
+
+  await putGithubFile({
+    owner,
+    repo,
+    branch,
+    path: 'data/items.json',
+    token,
+    content: toBase64Text(JSON.stringify(nextItems, null, 2)),
+    message: `Remove data for ${item.title}`,
+    sha: dataFile && dataFile.sha,
+  });
+}
+
+async function deleteItem(item, button) {
+  const confirmed = window.confirm(`Hapus "${item.title}" dari vault?`);
+  if (!confirmed) return;
+
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Menghapus...';
+
+  try {
+    if (isLocalMode) {
+      await deleteLocalItem(item.id);
+    } else {
+      await deleteGithubItem(item);
+    }
+    currentItems = currentItems.filter((entry) => entry.id !== item.id);
+    renderAdminItems();
+    setStatus(`Selesai hapus: ${item.title}`);
+  } catch (error) {
+    setStatus(`Gagal hapus:\n${error.message}`);
+    button.disabled = false;
+    button.textContent = original;
+  }
+}
+
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
 
@@ -257,6 +399,7 @@ form.addEventListener('submit', async (event) => {
 
     form.reset();
     updateScriptFields();
+    loadAdminItems();
     setStatus(`Selesai.\nFile: ${item.path}\nData sudah masuk ke data/items.json.`);
   } catch (error) {
     setStatus(`Gagal upload:\n${error.message}`);

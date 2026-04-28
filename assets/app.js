@@ -159,10 +159,16 @@ async function copyScript(path, button) {
 
 async function loadItems() {
   try {
-    let response = await fetch('/api/items', { cache: 'no-store' });
-    if (!response.ok) {
-      response = await fetch('data/items.json', { cache: 'no-store' });
+    const isLocalMode = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const dataUrl = `data/items.json?v=${Date.now()}`;
+    let response = isLocalMode
+      ? await fetch('/api/items', { cache: 'no-store' })
+      : await fetch(dataUrl, { cache: 'no-store' });
+
+    if (!response.ok && isLocalMode) {
+      response = await fetch(dataUrl, { cache: 'no-store' });
     }
+
     if (!response.ok) throw new Error('Tidak bisa membaca data item');
     const items = await response.json();
 

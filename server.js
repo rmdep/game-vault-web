@@ -140,6 +140,28 @@ async function handleUpload(req, res) {
   send(res, 201, { item });
 }
 
+async function handleDelete(req, res) {
+  const id = decodeURIComponent(req.url.split('/').pop().split('?')[0]);
+  const items = await readItems();
+  const item = items.find((entry) => entry.id === id);
+
+  if (!item) {
+    send(res, 404, { error: 'Berkas tidak ditemukan.' });
+    return;
+  }
+
+  const filePath = path.normalize(path.join(root, item.path));
+  const relative = path.relative(root, filePath);
+  if (!relative.startsWith('..') && !path.isAbsolute(relative)) {
+    await fs.unlink(filePath).catch((error) => {
+      if (error.code !== 'ENOENT') throw error;
+    });
+  }
+
+  await writeItems(items.filter((entry) => entry.id !== id));
+  send(res, 200, { ok: true });
+}
+
 async function serveStatic(req, res) {
   const filePath = safeStaticPath(req.url);
   if (!filePath) {
@@ -170,6 +192,11 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && req.url.startsWith('/api/upload')) {
       await handleUpload(req, res);
+      return;
+    }
+
+    if (req.method === 'DELETE' && req.url.startsWith('/api/items/')) {
+      await handleDelete(req, res);
       return;
     }
 
