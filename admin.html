@@ -50,6 +50,10 @@
 
       <section class="panel is-hidden" id="github-settings">
         <h2>GitHub Pages Upload</h2>
+        <p class="hint">
+          Mode ini dipakai saat admin dibuka dari GitHub Pages.
+          Token hanya disimpan di browser kamu, bukan di file project.
+        </p>
 
         <div class="form-grid">
 
@@ -82,6 +86,9 @@
 
       <section class="panel">
         <h2>Data Berkas</h2>
+        <p class="hint" id="upload-mode-note">
+          Upload disimpan ke folder kategori dan otomatis masuk ke daftar utama.
+        </p>
 
         <form id="upload-form">
 
@@ -101,7 +108,7 @@
               <input id="title" type="text" required placeholder="Nama berkas">
             </label>
 
-            <label id="file-wrapper">
+            <label>
               File
               <input id="file" type="file" required>
             </label>
@@ -113,7 +120,6 @@
             <textarea id="description" rows="5" required placeholder="Jelaskan isi berkas ini"></textarea>
           </label>
 
-          <!-- 🔥 INI DOANG YANG DIUBAH -->
           <div id="script-fields" class="script-admin is-hidden">
             <h3>Detail Script</h3>
 
@@ -130,12 +136,6 @@
               </label>
 
             </div>
-
-            <!-- GANTI FILE JADI TEXTAREA -->
-            <label>
-              Code Script
-              <textarea id="script-code" rows="10" placeholder="// tulis code di sini..."></textarea>
-            </label>
           </div>
 
           <button class="primary" type="submit">Upload ke Vault</button>
@@ -147,34 +147,13 @@
 
       <section class="panel">
         <h2>Kelola Berkas</h2>
+        <p class="hint">Hapus berkas yang keliru dari repo dan daftar utama.</p>
         <div class="admin-file-list" id="admin-file-list"></div>
       </section>
 
     </div>
 
   </main>
-
- <script>
-  const category = document.getElementById("category");
-  const scriptFields = document.getElementById("script-fields");
-  const fileWrapper = document.getElementById("file-wrapper");
-  const fileInput = document.getElementById("file");
-
-  function updateUI() {
-    if (category.value === "scripts") {
-      scriptFields.classList.remove("is-hidden");
-      fileWrapper.style.display = "none";
-      fileInput.required = false;
-    } else {
-      scriptFields.classList.add("is-hidden");
-      fileWrapper.style.display = "block";
-      fileInput.required = true;
-    }
-  }
-
-  category.addEventListener("change", updateUI);
-  updateUI();
-</script>
 
   <script src="assets/admin.js?v=manage-files-1"></script>
 
