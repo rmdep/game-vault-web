@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin - Game Vault</title>
-  <link rel="stylesheet" href="assets/styles.css?v=manage-files-1">
+  <link rel="stylesheet" href="assets/styles.css?v=manage-files-2">
 </head>
 
 <body>
@@ -21,6 +21,7 @@
 
   <main class="admin-layout">
 
+    <!-- LOGIN -->
     <section class="panel login-panel" id="login-panel">
       <h2>Login Admin</h2>
       <p class="hint">Masuk dulu untuk membuka panel upload.</p>
@@ -46,17 +47,14 @@
       <pre id="login-status" class="status compact-status"></pre>
     </section>
 
+    <!-- ADMIN CONTENT -->
     <div id="admin-content" class="admin-content is-hidden" hidden>
 
+      <!-- GITHUB SETTINGS -->
       <section class="panel is-hidden" id="github-settings">
         <h2>GitHub Pages Upload</h2>
-        <p class="hint">
-          Mode ini dipakai saat admin dibuka dari GitHub Pages.
-          Token hanya disimpan di browser kamu, bukan di file project.
-        </p>
 
         <div class="form-grid">
-
           <label>
             Owner GitHub
             <input id="owner" type="text" value="rmdep">
@@ -76,7 +74,6 @@
             GitHub token
             <input id="token" type="password" placeholder="github_pat_...">
           </label>
-
         </div>
 
         <button class="download" id="clear-token" type="button">
@@ -84,11 +81,9 @@
         </button>
       </section>
 
+      <!-- UPLOAD -->
       <section class="panel">
         <h2>Data Berkas</h2>
-        <p class="hint" id="upload-mode-note">
-          Upload disimpan ke folder kategori dan otomatis masuk ke daftar utama.
-        </p>
 
         <form id="upload-form">
 
@@ -108,9 +103,10 @@
               <input id="title" type="text" required placeholder="Nama berkas">
             </label>
 
-            <label>
+            <!-- FILE (HANYA NON SCRIPT) -->
+            <label id="file-wrapper">
               File
-              <input id="file" type="file" required>
+              <input id="file" type="file">
             </label>
 
           </div>
@@ -120,8 +116,9 @@
             <textarea id="description" rows="5" required placeholder="Jelaskan isi berkas ini"></textarea>
           </label>
 
+          <!-- SCRIPT MODE -->
           <div id="script-fields" class="script-admin is-hidden">
-            <h3>Detail Script</h3>
+            <h3>Script Editor</h3>
 
             <div class="form-grid">
 
@@ -136,6 +133,11 @@
               </label>
 
             </div>
+
+            <label>
+              Code Script
+              <textarea id="script-code" rows="12" placeholder="// Tulis code di sini..."></textarea>
+            </label>
           </div>
 
           <button class="primary" type="submit">Upload ke Vault</button>
@@ -145,9 +147,9 @@
         <pre id="status" class="status">Siap upload.</pre>
       </section>
 
+      <!-- LIST FILE -->
       <section class="panel">
         <h2>Kelola Berkas</h2>
-        <p class="hint">Hapus berkas yang keliru dari repo dan daftar utama.</p>
         <div class="admin-file-list" id="admin-file-list"></div>
       </section>
 
@@ -155,7 +157,24 @@
 
   </main>
 
-  <script src="assets/admin.js?v=manage-files-1"></script>
+  <script>
+    // TOGGLE MODE SCRIPT VS FILE
+    const category = document.getElementById("category");
+    const scriptFields = document.getElementById("script-fields");
+    const fileWrapper = document.getElementById("file-wrapper");
+
+    category.addEventListener("change", () => {
+      if (category.value === "scripts") {
+        scriptFields.classList.remove("is-hidden");
+        fileWrapper.style.display = "none";
+      } else {
+        scriptFields.classList.add("is-hidden");
+        fileWrapper.style.display = "block";
+      }
+    });
+  </script>
+
+  <script src="assets/admin.js?v=manage-files-2"></script>
 
 </body>
 </html>
