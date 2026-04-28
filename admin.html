@@ -9,172 +9,153 @@
 
 <body>
 
-<header class="topbar">
-  <div>
-    <p class="eyebrow">Admin panel</p>
-    <h1>Upload Berkas</h1>
-  </div>
-  <nav>
-    <a href="index.html">Lihat Web</a>
-  </nav>
-</header>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Admin panel</p>
+      <h1>Upload Berkas</h1>
+    </div>
+    <nav>
+      <a href="index.html">Lihat Web</a>
+    </nav>
+  </header>
 
-<main class="admin-layout">
+  <main class="admin-layout">
 
-  <!-- LOGIN (TIDAK DIUBAH SAMA SEKALI) -->
-  <section class="panel login-panel" id="login-panel">
-    <h2>Login Admin</h2>
-    <p class="hint">Masuk dulu untuk membuka panel upload.</p>
+    <section class="panel login-panel" id="login-panel">
+      <h2>Login Admin</h2>
+      <p class="hint">Masuk dulu untuk membuka panel upload.</p>
 
-    <form id="login-form">
-      <div class="form-grid">
-        <label>
-          ID admin
-          <input id="admin-id" type="text" autocomplete="username" required placeholder="admin">
-        </label>
+      <form id="login-form">
+        <div class="form-grid">
 
-        <label>
-          Password
-          <input id="admin-password" type="password" autocomplete="current-password" required placeholder="Password">
-        </label>
-      </div>
+          <label>
+            ID admin
+            <input id="admin-id" type="text" autocomplete="username" required placeholder="admin">
+          </label>
 
-      <button class="primary" type="submit">Masuk Admin</button>
-    </form>
+          <label>
+            Password
+            <input id="admin-password" type="password" autocomplete="current-password" required placeholder="Password">
+          </label>
 
-    <pre id="login-status" class="status compact-status"></pre>
-  </section>
+        </div>
 
-  <!-- ADMIN CONTENT -->
-  <div id="admin-content" class="admin-content is-hidden" hidden>
+        <button class="primary" type="submit">Masuk Admin</button>
+      </form>
 
-    <!-- GITHUB SETTINGS (TIDAK DIUBAH) -->
-    <section class="panel is-hidden" id="github-settings">
-      <h2>GitHub Pages Upload</h2>
-      <p class="hint">Mode ini dipakai saat admin dibuka dari GitHub Pages. Token hanya disimpan di browser kamu, bukan di file project.</p>
-
-      <div class="form-grid">
-        <label>
-          Owner GitHub
-          <input id="owner" type="text" value="rmdep">
-        </label>
-
-        <label>
-          Nama repo
-          <input id="repo" type="text" value="game-vault-web">
-        </label>
-
-        <label>
-          Branch
-          <input id="branch" type="text" value="main">
-        </label>
-
-        <label>
-          GitHub token
-          <input id="token" type="password" placeholder="github_pat_...">
-        </label>
-      </div>
-
-      <button class="download" id="clear-token" type="button">Hapus token tersimpan</button>
+      <pre id="login-status" class="status compact-status"></pre>
     </section>
 
-    <!-- DATA BERKAS -->
-    <section class="panel">
-      <h2>Data Berkas</h2>
-      <p class="hint" id="upload-mode-note">Upload disimpan ke folder kategori dan otomatis masuk ke daftar utama.</p>
+    <div id="admin-content" class="admin-content is-hidden" hidden>
 
-      <form id="upload-form">
+      <section class="panel is-hidden" id="github-settings">
+        <h2>GitHub Pages Upload</h2>
+        <p class="hint">
+          Mode ini dipakai saat admin dibuka dari GitHub Pages.
+          Token hanya disimpan di browser kamu, bukan di file project.
+        </p>
 
         <div class="form-grid">
 
           <label>
-            Kategori
-            <select id="category">
-              <option value="documents">Document</option>
-              <option value="scripts">Script</option>
-              <option value="games">File Game</option>
-            </select>
+            Owner GitHub
+            <input id="owner" type="text" value="rmdep">
           </label>
 
           <label>
-            Nama
-            <input id="title" type="text" required placeholder="Nama berkas">
+            Nama repo
+            <input id="repo" type="text" value="game-vault-web">
           </label>
 
-          <!-- FILE (TETAP ADA) -->
-          <label id="file-input-group">
-            File
-            <input id="file" type="file" required>
+          <label>
+            Branch
+            <input id="branch" type="text" value="main">
+          </label>
+
+          <label>
+            GitHub token
+            <input id="token" type="password" placeholder="github_pat_...">
           </label>
 
         </div>
 
-        <!-- SCRIPT MODE (DITAMBAH, TIDAK MENGGANGGU YANG LAIN) -->
-        <div id="script-code-group" class="script-admin is-hidden">
-          <label>
-            Code Script
-            <textarea id="script-code-input" rows="10" placeholder="Tulis script di sini..."></textarea>
-          </label>
-        </div>
+        <button class="download" id="clear-token" type="button">
+          Hapus token tersimpan
+        </button>
+      </section>
 
-        <label>
-          Deskripsi
-          <textarea id="description" rows="5" required placeholder="Jelaskan isi berkas ini"></textarea>
-        </label>
+      <section class="panel">
+        <h2>Data Berkas</h2>
+        <p class="hint" id="upload-mode-note">
+          Upload disimpan ke folder kategori dan otomatis masuk ke daftar utama.
+        </p>
 
-        <!-- DETAIL SCRIPT (TETAP ADA) -->
-        <div id="script-fields" class="script-admin is-hidden">
-          <h3>Detail Script</h3>
+        <form id="upload-form">
 
           <div class="form-grid">
+
             <label>
-              Topik script
-              <input id="script-module" type="text" placeholder="Movement Player">
+              Kategori
+              <select id="category">
+                <option value="documents">Document</option>
+                <option value="scripts">Script</option>
+                <option value="games">File Game</option>
+              </select>
             </label>
 
             <label>
-              Tags
-              <input id="script-tags" type="text" placeholder="movement, player, 2d">
+              Nama
+              <input id="title" type="text" required placeholder="Nama berkas">
             </label>
+
+            <label>
+              File
+              <input id="file" type="file" required>
+            </label>
+
           </div>
-        </div>
 
-        <button class="primary" type="submit">Upload ke Vault</button>
+          <label>
+            Deskripsi
+            <textarea id="description" rows="5" required placeholder="Jelaskan isi berkas ini"></textarea>
+          </label>
 
-      </form>
+          <div id="script-fields" class="script-admin is-hidden">
+            <h3>Detail Script</h3>
 
-      <pre id="status" class="status">Siap upload.</pre>
-    </section>
+            <div class="form-grid">
 
-    <!-- FILE LIST (TIDAK DIUBAH) -->
-    <section class="panel">
-      <h2>Kelola Berkas</h2>
-      <p class="hint">Hapus berkas yang keliru dari repo dan daftar utama.</p>
-      <div class="admin-file-list" id="admin-file-list"></div>
-    </section>
+              <label>
+                Topik script
+                <input id="script-module" type="text" placeholder="Movement Player">
+              </label>
 
-  </div>
+              <label>
+                Tags
+                <input id="script-tags" type="text" placeholder="movement, player, 2d">
+              </label>
 
-</main>
+            </div>
+          </div>
 
-<script src="assets/admin.js?v=manage-files-1"></script>
+          <button class="primary" type="submit">Upload ke Vault</button>
 
-<!-- ================= TAMBAHAN SCRIPT MODE ================= -->
-<script>
-const categorySelect = document.getElementById("category");
-const fileGroup = document.getElementById("file-input-group");
-const scriptGroup = document.getElementById("script-code-group");
+        </form>
 
-categorySelect.addEventListener("change", () => {
-  if (categorySelect.value === "scripts") {
-    fileGroup.style.display = "none";
-    scriptGroup.classList.remove("is-hidden");
-  } else {
-    fileGroup.style.display = "block";
-    scriptGroup.classList.add("is-hidden");
-  }
-});
-</script>
+        <pre id="status" class="status">Siap upload.</pre>
+      </section>
+
+      <section class="panel">
+        <h2>Kelola Berkas</h2>
+        <p class="hint">Hapus berkas yang keliru dari repo dan daftar utama.</p>
+        <div class="admin-file-list" id="admin-file-list"></div>
+      </section>
+
+    </div>
+
+  </main>
+
+  <script src="assets/admin.js?v=manage-files-1"></script>
 
 </body>
 </html>
