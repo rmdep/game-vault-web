@@ -108,9 +108,9 @@
               <input id="title" type="text" required placeholder="Nama berkas">
             </label>
 
-            <label>
+            <label id="file-label">
               File
-              <input id="file" type="file" required>
+              <input id="file" type="file">
             </label>
 
           </div>
@@ -136,6 +136,12 @@
               </label>
 
             </div>
+
+            <label>
+              Isi Script
+              <textarea id="script-content" rows="12" placeholder="Tulis atau tempel script di sini..."></textarea>
+            </label>
+
           </div>
 
           <button class="primary" type="submit">Upload ke Vault</button>
@@ -156,6 +162,21 @@
   </main>
 
   <script src="assets/admin.js?v=manage-files-1"></script>
+
+  <script>
+    const categorySelect = document.getElementById('category');
+    const fileLabel = document.getElementById('file-label');
+    const fileInput = document.getElementById('file');
+
+    function toggleFileInput() {
+      const isScript = categorySelect.value === 'scripts';
+      fileLabel.style.display = isScript ? 'none' : '';
+      fileInput.required = !isScript;
+    }
+
+    categorySelect.addEventListener('change', toggleFileInput);
+    toggleFileInput();
+  </script>
 
 </body>
 </html>
